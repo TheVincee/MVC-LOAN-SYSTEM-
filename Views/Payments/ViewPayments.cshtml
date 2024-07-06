@@ -1,0 +1,35 @@
+@model List<JJK.Entities.PaymentsTb>
+
+<h2>Payments</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Loan ID</th>
+            <th>Client ID</th>
+            <th>Collectable</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var payment in Model)
+        {
+            <tr>
+                <td>@payment.LoanId</td>
+                <td>@payment.ClientId</td>
+                <td>@payment.Collectable</td>
+                <td>@payment.Date</td>
+                <td>@payment.Status</td>
+                <td>
+                    @if (payment.Status == "Pending")
+                    {
+                        <a class="btn btn-primary" asp-action="Pay" asp-route-id="@payment.Id">Pay</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+ <button class="btn btn-secondary print-btn" onclick="window.print()">Print</button>

@@ -1,0 +1,23 @@
+@model JJK.Entities.PaymentsTb
+
+<div class="container mt-4">
+    <h1 class="mb-4">Make Payment</h1>
+
+    <form asp-action="ProcessPayment" method="post">
+        <input type="hidden" asp-for="Id" name="paymentId" />
+        
+        <div class="mb-3">
+            <label asp-for="Collectable" class="form-label">Collectable Amount</label>
+            <input asp-for="Collectable" class="form-control" readonly />
+        </div>
+        
+        <div class="mb-3">
+            <label for="amount" class="form-label">Payment Amount</label>
+            <input type="number" name="amount" class="form-control" min="0" step="0.01" required />
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Submit Payment</button>
+    </form>
+
+    <a asp-action="ViewPayments" asp-route-clientId="@Model.ClientId" class="btn btn-secondary mt-3">Back to Payments</a>
+</div>

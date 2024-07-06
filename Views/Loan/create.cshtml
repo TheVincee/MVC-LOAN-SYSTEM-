@@ -1,0 +1,154 @@
+@model JJK.Entities.LoanDb
+
+<h1 class="mb-4">Create Loan</h1>
+@{
+    ViewData["Title"] = "create";
+}
+<form asp-action="Create" method="post" class="needs-validation" novalidate>
+
+    <div class="mb-3">
+        <label asp-for="ClientId" class="form-label">Client</label>
+        <select asp-for="ClientId" id="clientId" class="form-select"></select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label">Status</label>
+        <input asp-for="Status" type="text" class="form-control" placeholder="Status">
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Amount" class="form-label">Amount</label>
+        <input asp-for="Amount" type="number" class="form-control" placeholder="Amount" id="amount">
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="NoOfPayment" class="form-label">No of Payment</label>
+        <input asp-for="NoOfPayment" type="number" class="form-control" placeholder="Enter Number of Payment" id="noOfPayment" onchange="calculateDueDate()">
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Deduction" class="form-label">Deduction</label>
+        <input asp-for="Deduction" type="number" class="form-control" placeholder="Enter Deduction" id="deduction" readonly>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Type" class="form-label">Type</label>
+        <select asp-for="Type" id="typeofPayment" class="form-select" onchange="calculateDueDate(); calculateAmounts();">
+            <option value="Daily">Daily</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Monthly">Monthly</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Interest" class="form-label">Interest</label>
+        <input asp-for="Interest" type="number" step="0.01" class="form-control" placeholder="Interest" id="interest" readonly>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DateCreated" class="form-label">Date Created</label>
+        <input asp-for="DateCreated" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="RecievableAmount" class="form-label">Receivable Amount</label>
+        <input asp-for="RecievableAmount" type="number" step="0.01" class="form-control" placeholder="Receivable Amount" id="receivableAmount" readonly>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DueDate" class="form-label">Due Date</label>
+        <input asp-for="DueDate" type="date" class="form-control" placeholder="Enter Due Date" id="dueDate" readonly>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PayableAmount" class="form-label">Payable Amount</label>
+        <input asp-for="PayableAmount" type="number" step="0.01" class="form-control" placeholder="Payable Amount" id="payableAmount" readonly>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $.ajax({
+            url: 'http://localhost:5023/ClientAPI/GetClients'
+        })
+        .done(function(result) {
+            console.log(result);
+            const clientIdSelect = document.getElementById('clientId');
+            result.forEach(function(client) {
+                const option = document.createElement('option');
+                option.value = client.id;
+                option.text = client.fullName + ' ' + client.lastName;
+                clientIdSelect.appendChild(option);
+            });
+        })
+        .fail(function() {
+            alert("Failed to fetch clients");
+        });
+    });
+
+    const typeSelect = document.getElementById('typeofPayment');
+    const interestInput = document.getElementById('interest');
+    const noOfPaymentInput = document.getElementById('noOfPayment');
+    const deductionInput = document.getElementById('deduction');
+    const amountInput = document.getElementById('amount');
+    const receivableAmountInput = document.getElementById('receivableAmount');
+    const payableAmountInput = document.getElementById('payableAmount');
+    const dueDateInput = document.getElementById('dueDate');
+
+    typeSelect.addEventListener('change', function() {
+        calculateDueDate();
+        calculateAmounts();
+    });
+
+    noOfPaymentInput.addEventListener('change', function() {
+        calculateDueDate();
+        calculateAmounts();
+    });
+
+    function calculateAmounts() {
+        const selectedType = typeSelect.value;
+        let defaultInterest = 0;
+
+        if (selectedType === 'Daily') {
+            defaultInterest = 0.01;
+        } else if (selectedType === 'Weekly') {
+            defaultInterest = 0.03;
+        } else if (selectedType === 'Monthly') {
+            defaultInterest = 0.05;
+        }
+
+        const calculatedInterest = defaultInterest;
+        interestInput.value = calculatedInterest.toFixed(2);
+
+        const noOfPayment = parseFloat(noOfPaymentInput.value);
+        const amount = parseFloat(amountInput.value);
+
+        const receivableAmount = amount;
+        receivableAmountInput.value = receivableAmount.toFixed(2);
+
+        const interestAmount = amount * calculatedInterest * noOfPayment;
+        const deduction = (interestAmount) / noOfPayment;
+        deductionInput.value = deduction.toFixed(2);
+
+        const payableAmount = amount + interestAmount;
+        payableAmountInput.value = payableAmount.toFixed(2);
+    }
+
+    function calculateDueDate() {
+        const selectedType = typeSelect.value;
+        const noOfPayment = parseInt(noOfPaymentInput.value);
+
+        const currentDate = new Date();
+        if (selectedType === 'Daily') {
+            currentDate.setDate(currentDate.getDate() + noOfPayment);
+        } else if (selectedType === 'Weekly') {
+            currentDate.setDate(currentDate.getDate() + noOfPayment * 7);
+        } else if (selectedType === 'Monthly') {
+            currentDate.setMonth(currentDate.getMonth() + noOfPayment);
+        }
+        dueDateInput.value = currentDate.toISOString().split('T')[0];
+    }
+</script>

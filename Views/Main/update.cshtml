@@ -1,0 +1,101 @@
+@model JJK.Entities.ClientsInfoTb
+
+@{
+    ViewData["Title"] = "Update Client";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Update Client Information</h2>
+
+    <form asp-action="Update" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label asp-for="UserType" class="form-label"></label>
+            <input asp-for="UserType" class="form-control" />
+            <span asp-validation-for="UserType" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label"></label>
+            <input asp-for="FullName" class="form-control" />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="LastName" class="form-label"></label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Address" class="form-label"></label>
+            <input asp-for="Address" class="form-control" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ZipCode" class="form-label"></label>
+            <input asp-for="ZipCode" class="form-control" />
+            <span asp-validation-for="ZipCode" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Birthday" class="form-label"></label>
+            <input asp-for="Birthday" id="birthdayInput" type="date" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Age" class="form-label"></label>
+            <input asp-for="Age" id="ageInput" class="form-control" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="NameOfFather" class="form-label"></label>
+            <input asp-for="NameOfFather" class="form-control" />
+            <span asp-validation-for="NameOfFather" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="NameOfMother" class="form-label"></label>
+            <input asp-for="NameOfMother" class="form-control" />
+            <span asp-validation-for="NameOfMother" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="CivilStatus" class="form-label"></label>
+            <input asp-for="CivilStatus" class="form-control" />
+            <span asp-validation-for="CivilStatus" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Religion" class="form-label"></label>
+            <input asp-for="Religion" class="form-control" />
+            <span asp-validation-for="Religion" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Occupation" class="form-label"></label>
+            <input asp-for="Occupation" class="form-control" />
+            <span asp-validation-for="Occupation" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        function calculateAge() {
+            var currentDate = new Date();
+            var birthday = new Date(document.getElementById('birthdayInput').value);
+            var age = currentDate.getFullYear() - birthday.getFullYear();
+            if (currentDate.getMonth() < birthday.getMonth() || (currentDate.getMonth() == birthday.getMonth() && currentDate.getDate() < birthday.getDate())) {
+                age--;
+            }
+            document.getElementById('ageInput').value = age;
+        }
+
+        document.getElementById('birthdayInput').addEventListener('change', calculateAge);
+    </script>
+}
